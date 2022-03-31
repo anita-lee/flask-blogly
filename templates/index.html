@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div><h1>USERS</h1>
-<ul>
-  {% for user in users %}
-    <li><a href="/users/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></li>
-    {% endfor %}
-</ul>
-<a href="/users/new"><button>Add user</button></a>
-
+<div class="container">
+  <div class="mb-3">
+    <h1>USERS</h1>
+    <ul>
+      {% for user in users %}
+      <li><a href="/users/{{ user.id }}">{{ user.first_name }} {{ user.last_name }}</a></li>
+      {% endfor %}
+    </ul>
+    <a href="/users/new"><button type="button" class="btn btn-primary">Add user</button></a>
+  </div>
 </div>
-  {% endblock %}
+{% endblock %}

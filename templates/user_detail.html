@@ -1,13 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div>
-  <img src="/static/succulent.jpeg" alt="profile picture">
-</div>
-<div>
-  <h1>{{ user.first_name }} {{ user.last_name }}</h1>
-  <a href="/users/{{ user.id }}/edit"><button>Edit</button></a>
-  <form action="/users/{{ user.id }}/delete" method="POST"><button type="submit">Delete</button></form>
-</div>
+<div class="container">
+  <div class="row">
+
+    <div class="col">
+      <img src="{{ user.image_url }}" alt="profile picture">
+    </div>
+
+    <div class="col">
+
+      <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+
+      <form action="/users/{{ user.id }}/delete" method="POST">
+        <a class="btn btn-warning" href="/users/{{ user.id }}/edit">Edit</a>
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </form>
+
+    </div>
+
+  </div>
 
   {% endblock %}
