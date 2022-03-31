@@ -2,12 +2,12 @@
 
 {% block content %}
 <div>
-  <img src="" alt="">
+  <img src="/static/succulent.jpeg" alt="profile picture">
 </div>
 <div>
-  <h1>{{ user }}</h1>
-  <button type="submit">Edit</button>
-  <button>Delete</button>
+  <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+  <a href="/users/{{ user.id }}/edit"><button>Edit</button></a>
+  <form action="/users/{{ user.id }}/delete" method="POST"><button type="submit">Delete</button></form>
 </div>
 
   {% endblock %}
