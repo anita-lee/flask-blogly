@@ -19,6 +19,8 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
+    posts = db.relationship('Post', backref='user')
+
     id = db.Column(
         db.Integer,
         primary_key=True,
@@ -58,7 +60,7 @@ class Post(db.Model):
     created_at = db.Column(
         db.DateTime,
         nullable=False,
-        default=db.func.now)
+        default=db.func.now())
 
     user_id = db.Column(
         db.ForeignKey('users.id'))

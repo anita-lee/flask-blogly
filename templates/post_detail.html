@@ -11,7 +11,8 @@
       <p>{{ post.content }}</p>
       <p>By {{ user.first_name }} {{ user.last_name }}</p>
 
-      <a href="/users/{{ user-id }}" class="btn btn-warning">Cancel</a>
+
+      <a href="/users/{{ user.id }}" class="btn btn-secondary">Cancel</a>
 
       <a class="btn btn-warning" href="/posts/{{ post.id }}/edit">Edit</a>
 
