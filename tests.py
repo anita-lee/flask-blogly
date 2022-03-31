@@ -33,10 +33,10 @@ class UserViewTestCase(TestCase):
 
         test_user = User(first_name="test_first",
                                     last_name="test_last",
-                                    image_url=None)
+                                    image_url=DEFAULT_IMAGE_URL)
 
         second_user = User(first_name="test_first_two", last_name="test_last_two",
-                           image_url=None)
+                           image_url=DEFAULT_IMAGE_URL)
 
         db.session.add_all([test_user, second_user])
         db.session.commit()
@@ -51,10 +51,50 @@ class UserViewTestCase(TestCase):
         """Clean up any fouled transaction."""
         db.session.rollback()
 
-    def test_list_users(self):
+    def test_show_users(self):
+        """Tests get request on /users route"""
         with self.client as c:
             resp = c.get("/users")
             self.assertEqual(resp.status_code, 200)
             html = resp.get_data(as_text=True)
             self.assertIn("test_first", html)
             self.assertIn("test_last", html)
+
+    def test_list_users(self):
+        """Tests redirect on root route"""
+        with self.client as c:
+            resp = c.get("/")
+            self.assertEqual(resp.status_code, 302)
+
+    def test_new_user_form(self):
+        """Tests get request on show new user route"""
+        with self.client as c:
+            resp = c.get("/users/new")
+
+            self.assertEqual(resp.status_code, 200)
+            html = resp.get_data(as_text=True)
+            self.assertIn("<h1>CREATE A USER", html)
+
+    def test_add_new_user(self):
+        """Tests post route to add user data."""
+        with self.client as c:
+            d = {"first_name": "test_first_name", "last_name": "test_last_name", "image_url": DEFAULT_IMAGE_URL }
+            resp = c.post("/users/new", data=d, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertIn("test_first_name", html)
+            self.assertIn("test_last_name", html)
+            #when to test for 302 redirect?
+            self.assertEqual(resp.status_code, 200)
+
+    def test_delete_user(self):
+        """Tests post route to delete user"""
+        with self.client as c:
+            resp = c.post(f"/users/{self.user_id}/delete", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertNotIn(f"{self.user_id}", html)
+            self.assertEqual(resp.status_code, 200)
+
+
+

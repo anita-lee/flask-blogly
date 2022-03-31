@@ -50,7 +50,7 @@ def add_new_user():
     db.session.add(user)
     db.session.commit()
 
-    return redirect("/")
+    return redirect("/users")
 
 @app.get("/users/<int:user_id>")
 def show_user_by_id(user_id):
