@@ -1,7 +1,7 @@
 """Blogly application."""
 
 from flask import Flask, request, redirect, render_template
-from models import db, connect_db, User
+from models import DEFAULT_IMAGE_URL, db, connect_db, User, Post
 from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
@@ -9,7 +9,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 
-# RESPONSES_KEY = "responses"
 app.config['SECRET_KEY'] = "never-tell!"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
@@ -20,7 +19,7 @@ db.create_all()
 
 @app.get("/")
 def list_users():
-    """List users and show add form."""
+    """List users."""
     return redirect("/users")
 
 @app.get("/users")
@@ -28,7 +27,6 @@ def show_users():
     """show list of users"""
 
     users = User.query.all()
-
     return render_template("index.html", users=users)
 
 @app.get("/users/new")
@@ -44,7 +42,7 @@ def add_new_user():
     #retrieve form data here
     first_name = request.form['first_name']
     last_name = request.form['last_name']
-    image_url = request.form['image_url']
+    image_url = request.form['image_url'] or None
 
     user = User(first_name=first_name, last_name=last_name, image_url=image_url)
     db.session.add(user)
@@ -83,7 +81,7 @@ def edit_user(user_id):
 
     user.first_name = request.form['first_name']
     user.last_name = request.form['last_name']
-    user.image_url = request.form['image_url']
+    user.image_url = request.form['image_url'] or DEFAULT_IMAGE_URL
 
     db.session.commit()
 
@@ -101,3 +99,40 @@ def delete_user(user_id):
     db.session.commit()
 
     return redirect("/")
+
+@app.get("/users/<int:user_id>/posts/new")
+def show_post_form(user_id):
+    """Render form to add new post."""
+
+    return render_template("post_new.html")
+
+@app.post("/users/<int:user_id>/posts/new")
+def add_post(user_id):
+    """Adds new post to db"""
+
+    #retrieve form data here
+    title = request.form['title']
+    content= request.form['content']
+
+    post = Post(title=title, content=content)
+    db.session.add(post)
+    db.session.commit()
+
+    return redirect(f"/users/{user_id}")
+
+@app.get("/posts/<int:post_id>")
+def show_post(post_id):
+    """Display post."""
+
+    post = Post.query.get_or_404(post_id)
+    user = User.query.get_or_404(post.user_id)
+    return render_template("post_detail.html", post=post, user=user)
+
+@app.get("/posts/<int:post_id>/edit")
+def edit_post(post_id):
+    """Display edit post page."""
+
+    post = Post.query.get_or_404(post_id)
+    return render_template("post_edit.html", post=post)
+
+@app.post("/posts/<int:post-id]/edit")
