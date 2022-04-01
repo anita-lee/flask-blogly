@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from app import app, db
-from models import DEFAULT_IMAGE_URL, User
+from models import DEFAULT_IMAGE_URL, User, Post
 
 # Let's configure our app to use a different database for tests
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///blogly_test"
@@ -27,6 +27,7 @@ class UserViewTestCase(TestCase):
         # As you add more models later in the exercise, you'll want to delete
         # all of their records before each test just as we're doing with the
         # User model below.
+        Post.query.delete() #avoid orphan children
         User.query.delete()
 
         self.client = app.test_client()
@@ -38,6 +39,12 @@ class UserViewTestCase(TestCase):
         second_user = User(first_name="test_first_two", last_name="test_last_two",
                            image_url=DEFAULT_IMAGE_URL)
 
+
+
+        # test_post = Post(title="test_title",
+        #                             content="test_content",
+        #                             user_id=test_user.id)
+
         db.session.add_all([test_user, second_user])
         db.session.commit()
 
@@ -46,6 +53,8 @@ class UserViewTestCase(TestCase):
         # rely on this user in our tests without needing to know the numeric
         # value of their id, since it will change each time our tests are run.
         self.user_id = test_user.id
+
+
 
     def tearDown(self):
         """Clean up any fouled transaction."""
@@ -62,6 +71,7 @@ class UserViewTestCase(TestCase):
 
     def test_list_users(self):
         """Tests redirect on root route"""
+        #FIXME: see users, add more here.
         with self.client as c:
             resp = c.get("/")
             self.assertEqual(resp.status_code, 302)
@@ -84,11 +94,11 @@ class UserViewTestCase(TestCase):
 
             self.assertIn("test_first_name", html)
             self.assertIn("test_last_name", html)
-            #when to test for 302 redirect?
             self.assertEqual(resp.status_code, 200)
 
     def test_delete_user(self):
         """Tests post route to delete user"""
+        #TODO: Make sure post is not there as well. 
         with self.client as c:
             resp = c.post(f"/users/{self.user_id}/delete", follow_redirects=True)
             html = resp.get_data(as_text=True)
@@ -96,5 +106,14 @@ class UserViewTestCase(TestCase):
             self.assertNotIn(f"{self.user_id}", html)
             self.assertEqual(resp.status_code, 200)
 
+    def test_add_post(self):
+        """Tests post route to add post."""
+        with self.client as c:
+            d = {"title": "test_title", "content": "test_content"}
+            resp = c.post(f"/users/{self.user_id}/posts/new", data=d, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertIn("test_title", html)
+            self.assertEqual(resp.status_code, 200)
 
 

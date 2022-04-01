@@ -9,10 +9,10 @@
       <h1>{{ post.title }}</h1>
 
       <p>{{ post.content }}</p>
-      <p>By {{ user.first_name }} {{ user.last_name }}</p>
+      <p>By {{ post.user.first_name }} {{ post.user.last_name }}</p>
 
 
-      <a href="/users/{{ user.id }}" class="btn btn-secondary">Cancel</a>
+      <a href="/users/{{ post.user.id }}" class="btn btn-secondary">Cancel</a>
 
       <a class="btn btn-warning" href="/posts/{{ post.id }}/edit">Edit</a>
 
