@@ -1,7 +1,7 @@
 """Blogly application."""
 
 from flask import Flask, request, redirect, render_template
-from models import DEFAULT_IMAGE_URL, db, connect_db, User, Post
+from models import DEFAULT_IMAGE_URL, db, connect_db, User, Post, PostTag, Tag
 from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
@@ -17,6 +17,7 @@ connect_db(app)
 db.create_all()
 
 
+
 @app.get("/")
 def list_users():
     """List users."""
@@ -25,6 +26,8 @@ def list_users():
 @app.get("/users")
 def show_users():
     """show list of users"""
+
+    breakpoint()
 
     users = User.query.all()
     return render_template("index.html", users=users)
